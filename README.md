@@ -1,6 +1,6 @@
 # FeedbackSDK
 
-Swift Package for iOS and macOS apps that submit customer feedback to a [Feedback](https://github.com/kalahari/feedback) gateway.
+Swift Package for iOS and macOS apps that submit customer feedback to a Feedback gateway.
 
 ## Requirements
 
@@ -20,10 +20,6 @@ dependencies: [
 ```
 
 Then add the `FeedbackSDK` product to your target.
-
-### Local development (monorepo)
-
-When working inside the Feedback monorepo, depend on the package path `sdk/FeedbackSDK` (the example app already does this).
 
 ## Usage
 
@@ -74,6 +70,10 @@ FeedbackSDK.configure(
 
 try FeedbackSDK.setIdentityKeySyncEnabled(false)
 ```
+
+## Example
+
+A SwiftUI multiplatform sample app lives in [`FeedbackExampleApp/`](FeedbackExampleApp/). Open `FeedbackExampleApp.xcodeproj` in Xcode — it depends on the local package at the repository root. See that folder’s README for setup (API key, gateway base URL, and identity sync).
 
 ## License
 
