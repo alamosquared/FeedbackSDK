@@ -1,11 +1,37 @@
 import Foundation
 
+/// MIME types accepted by the Feedback attachment upload API.
+public enum AttachmentContentType: String, Sendable, CaseIterable, Codable {
+    case png = "image/png"
+    case jpeg = "image/jpeg"
+    case webp = "image/webp"
+    case heic = "image/heic"
+    case heif = "image/heif"
+    case json = "application/json"
+    case plainText = "text/plain"
+    case csv = "text/csv"
+    case gzip = "application/gzip"
+    case zlib = "application/zlib"
+    case octetStream = "application/octet-stream"
+
+    /// Parses a MIME type string, ignoring parameters and normalizing case.
+    public init?(mimeType: String) {
+        let normalized =
+            mimeType
+            .split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true)
+            .first?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() ?? mimeType.lowercased()
+        self.init(rawValue: normalized)
+    }
+}
+
 public struct AttachmentInput: Sendable {
     public let filename: String
     public let data: Data
-    public let contentType: String
+    public let contentType: AttachmentContentType
 
-    public init(filename: String, data: Data, contentType: String) {
+    public init(filename: String, data: Data, contentType: AttachmentContentType) {
         self.filename = filename
         self.data = data
         self.contentType = contentType
@@ -46,7 +72,7 @@ enum AttachmentUploader {
         let initiateBody = try JSONEncoder.feedback.encode(
             InitiateAttachmentUploadRequest(
                 filename: file.filename,
-                contentType: file.contentType,
+                contentType: file.contentType.rawValue,
                 sizeBytes: file.data.count,
                 ticketId: ticketId
             )

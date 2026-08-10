@@ -217,6 +217,46 @@ final class FeedbackSDKTests: XCTestCase {
         XCTAssertNotNil(headers["X-Feedback-Timestamp"])
         XCTAssertNotNil(headers["X-Feedback-Signature"])
     }
+
+    func testAttachmentContentTypeRawValuesMatchAllowlist() {
+        let expected: [AttachmentContentType: String] = [
+            .png: "image/png",
+            .jpeg: "image/jpeg",
+            .webp: "image/webp",
+            .heic: "image/heic",
+            .heif: "image/heif",
+            .json: "application/json",
+            .plainText: "text/plain",
+            .csv: "text/csv",
+            .gzip: "application/gzip",
+            .zlib: "application/zlib",
+            .octetStream: "application/octet-stream",
+        ]
+
+        XCTAssertEqual(AttachmentContentType.allCases.count, expected.count)
+        for (contentType, rawValue) in expected {
+            XCTAssertEqual(contentType.rawValue, rawValue)
+            XCTAssertEqual(AttachmentContentType(rawValue: rawValue), contentType)
+        }
+    }
+
+    func testAttachmentContentTypeParsesMimeTypeWithParameters() {
+        XCTAssertEqual(AttachmentContentType(mimeType: "IMAGE/PNG; charset=binary"), .png)
+        XCTAssertEqual(AttachmentContentType(mimeType: "application/json; charset=utf-8"), .json)
+        XCTAssertNil(AttachmentContentType(mimeType: "application/pdf"))
+        XCTAssertNil(AttachmentContentType(mimeType: "text/html"))
+    }
+
+    func testAttachmentInputUsesContentTypeEnum() {
+        let input = AttachmentInput(
+            filename: "payload.bin",
+            data: Data([0x78, 0x9C]),
+            contentType: .octetStream
+        )
+
+        XCTAssertEqual(input.contentType, .octetStream)
+        XCTAssertEqual(input.contentType.rawValue, "application/octet-stream")
+    }
 }
 
 private extension JSONEncoder {

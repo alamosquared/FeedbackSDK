@@ -15,7 +15,7 @@ Add the package dependency in Xcode (**File → Add Package Dependencies…**) o
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/alamosquared/FeedbackSDK.git", from: "0.1.0"),
+    .package(url: "https://github.com/alamosquared/FeedbackSDK.git", from: "0.2.0"),
 ],
 ```
 
@@ -70,6 +70,29 @@ FeedbackSDK.configure(
 
 try FeedbackSDK.setIdentityKeySyncEnabled(false)
 ```
+
+### Attachments
+
+Uploads must use an allowlisted MIME type via `AttachmentContentType`:
+
+```swift
+let attachment = AttachmentInput(
+    filename: "diagnostics.json.zlib",
+    data: compressedData,
+    contentType: .octetStream // or .json, .gzip, .png, …
+)
+
+_ = try await FeedbackSDK.submit(
+    FeedbackSubmission(
+        type: .bug,
+        title: "Diagnostics attached",
+        body: "See attached payload.",
+        attachments: [attachment]
+    )
+)
+```
+
+`AttachmentContentType.allCases` lists every accepted type. Use `AttachmentContentType(mimeType:)` to parse a MIME string (parameters are ignored).
 
 ## Example
 

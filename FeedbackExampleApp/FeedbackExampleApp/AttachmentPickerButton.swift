@@ -24,8 +24,11 @@ struct AttachmentPickerButton: View {
                     defer { url.stopAccessingSecurityScopedResource() }
 
                     guard let data = try? Data(contentsOf: url) else { return nil }
-                    let contentType = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType
+                    let mimeType = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType
                         ?? "application/octet-stream"
+                    guard let contentType = AttachmentContentType(mimeType: mimeType) else {
+                        return nil
+                    }
 
                     return AttachmentInput(
                         filename: url.lastPathComponent,
